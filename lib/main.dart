@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-import 'package:woofriend/config/theme/app_theme.dart';
-import 'package:woofriend/features/BL_woofriend/presentation/screens/home_screen.dart';
+import 'package:woofriend/config/config.dart';
 
-void main() {
-  GoogleFonts.config.allowRuntimeFetching = false;
-  runApp(const MainApp());
+
+
+void main() async {
+  
+  await Environment.initEnvironment();
+
+  runApp(
+    const ProviderScope(child: MainApp())
+  );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: AppTheme().getTheme(),
-        debugShowCheckedModeBanner: false,
-        home: const HomeScreen());
+  Widget build(BuildContext context, WidgetRef ref ) {
+
+    final appRouter = ref.watch( goRouterProvider );
+
+    return MaterialApp.router(
+      routerConfig: appRouter,
+      theme: AppTheme().getTheme(),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

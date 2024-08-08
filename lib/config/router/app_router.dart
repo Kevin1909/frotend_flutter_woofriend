@@ -1,15 +1,12 @@
-
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/screens/home_screen.dart';
 import 'package:woofriend/features/auth/presentation/screen/screens.dart';
 
-
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import 'app_router_notifier.dart';
 
 final goRouterProvider = Provider((ref) {
-
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
@@ -32,8 +29,8 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: '/bussiness-register',
-        builder: (context, state) => const BussinnesRegisterScreen(),
+        path: '/foundation-register',
+        builder: (context, state) => const FoundationRegisterScreen(),
       ),
 
       ///* Product Routes
@@ -41,28 +38,28 @@ final goRouterProvider = Provider((ref) {
         path: '/',
         builder: (context, state) => const HomeScreen(),
       ),
-      
     ],
-
     redirect: (context, state) {
-      
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
 
-      if ( isGoingTo == '/splash' && authStatus == AuthStatus.checking ) return null;
+      if (isGoingTo == '/splash' && authStatus == AuthStatus.checking)
+        return null;
 
-      if ( authStatus == AuthStatus.notAuthenticated ) {
-        if ( isGoingTo == '/login' || isGoingTo == '/register' ) return null;
+      if (authStatus == AuthStatus.notAuthenticated) {
+        if (isGoingTo == '/login' || isGoingTo == '/register') return null;
 
         return '/login';
       }
 
-      if ( authStatus == AuthStatus.authenticated ) {
-        if ( isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/splash' || isGoingTo == '/bussiness-register' ){
-           return '/';
+      if (authStatus == AuthStatus.authenticated) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/splash' ||
+            isGoingTo == '/bussiness-register') {
+          return '/';
         }
       }
-
 
       return null;
     },

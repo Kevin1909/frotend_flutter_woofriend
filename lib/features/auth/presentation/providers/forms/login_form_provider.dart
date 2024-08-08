@@ -3,7 +3,7 @@ import 'package:formz/formz.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:woofriend/features/auth/presentation/infrastructure/inputs/inputs.dart';
 
-import 'auth_provider.dart';
+import '../auth_provider.dart';
 
 
 //! 3 - StateNotifierProvider - consume afuera

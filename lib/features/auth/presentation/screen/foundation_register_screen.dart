@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
+import 'package:woofriend/features/auth/presentation/providers/providers.dart';
 
 import 'package:woofriend/features/shared/shared.dart';
 
-class BussinnesRegisterScreen extends StatelessWidget {
-  const BussinnesRegisterScreen({super.key});
+class FoundationRegisterScreen extends StatelessWidget {
+  const FoundationRegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class BussinnesRegisterScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                   color: Color(0xFFF8F7F7),
                   borderRadius: BorderRadius.all(Radius.circular(50))),
-              child: const _LoginForm(),
+              child: const _FoundationForm(),
             )
           ]),
         )),
@@ -58,11 +61,13 @@ class BussinnesRegisterScreen extends StatelessWidget {
   }
 }
 
-class _LoginForm extends StatelessWidget {
-  const _LoginForm();
+class _FoundationForm extends ConsumerWidget {
+  const _FoundationForm();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foundationForm = ref.watch(registerFormProvider);
+
     final textStyle = Theme.of(context).textTheme;
     const sizeIcons = Size.square(40);
     const sizeWidth = 10.0;
@@ -85,41 +90,30 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(
             height: 35,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconUser, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconUser, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Nombre del R. legal",
+                label: "Nombre fundación",
                 keyboardType: TextInputType.name,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onNameChanged,
+                errorMessage: foundationForm.isFormPosted
+                    ? foundationForm.name.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconEntity, size: sizeIcons),
-            SizedBox(
-              width: sizeWidth,
-            ),
-            SizedBox(
-              width: 240,
-              child: CustomTextFormField(
-                label: "Nombre de la entidad",
-                keyboardType: TextInputType.name,
-              ),
-            ),
-          ]),
-          const SizedBox(
-            height: 30,
-          ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconMail, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconMail, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -127,15 +121,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Correo electrónico",
                 keyboardType: TextInputType.emailAddress,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onEmailChange,
+                errorMessage: foundationForm.isFormPosted
+                    ? foundationForm.email.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconLocation, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconLocation, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -143,15 +142,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Ubicación",
                 keyboardType: TextInputType.streetAddress,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onUbicationChanged,
+                errorMessage: foundationForm.isFormPosted
+                    ? foundationForm.ubication.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconPhone, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconPhone, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -159,15 +163,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Teléfono",
                 keyboardType: TextInputType.phone,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onPhoneChanged,
+                errorMessage: foundationForm.isFormPosted
+                    ? foundationForm.phone.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconPassword, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconPassword, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -176,6 +185,11 @@ class _LoginForm extends StatelessWidget {
                 obscureText: true,
                 label: "Contraseña",
                 keyboardType: TextInputType.visiblePassword,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onPasswordChanged,
+                errorMessage: foundationForm.isFormPosted
+                    ? foundationForm.password.errorMessage
+                    : null,
               ),
             ),
           ]),
@@ -187,14 +201,11 @@ class _LoginForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '¿Ya está registrada la entidad?',
+                '¿Ya está registrada la fundación?',
                 style: textStyle.bodyMedium,
               ),
               TextButton(
-                  onPressed: () {
-                    // ignore: avoid_print
-                    print("boton presionado");
-                  },
+                  onPressed: () => context.push('/login'),
                   child: Text(
                     'Click aquí',
                     style: textStyle.titleSmall,
@@ -202,13 +213,19 @@ class _LoginForm extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          const SizedBox(
+          SizedBox(
             width: 150,
             height: 45,
             child: CustomFilledButton(
-                text: "Registrar",
-                buttonColor: colorTertiaryTheme,
-                colorText: colorSecondaryTheme),
+              text: "Registrar",
+              buttonColor: colorTertiaryTheme,
+              colorText: colorSecondaryTheme,
+              onPressed: foundationForm.isPosting
+                  ? null
+                  : ref
+                      .read(registerFormProvider.notifier)
+                      .onFormSubmit("user_foundation"),
+            ),
           ),
           const Spacer(
             flex: 2,

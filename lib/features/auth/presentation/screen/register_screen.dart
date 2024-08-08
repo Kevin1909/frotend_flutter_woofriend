@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
+import 'package:woofriend/features/auth/presentation/providers/forms/register_form_provider.dart';
 
 import 'package:woofriend/features/shared/shared.dart';
 
@@ -49,7 +52,7 @@ class RegisterScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                   color: Color(0xFFF8F7F7),
                   borderRadius: BorderRadius.all(Radius.circular(50))),
-              child: const _LoginForm(),
+              child: const _RegisterForm(),
             )
           ]),
         )),
@@ -58,11 +61,13 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-class _LoginForm extends StatelessWidget {
-  const _LoginForm();
+class _RegisterForm extends ConsumerWidget {
+  const _RegisterForm();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final registerForm = ref.watch(registerFormProvider);
+
     final textStyle = Theme.of(context).textTheme;
     const sizeIcons = Size.square(40);
     const sizeWidth = 10.0;
@@ -84,9 +89,9 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(
             height: 35,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconUser, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconUser, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -94,15 +99,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Nombre",
                 keyboardType: TextInputType.name,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onNameChanged,
+                errorMessage: registerForm.isFormPosted
+                    ? registerForm.name.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconMail, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconMail, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -110,15 +120,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Correo electrónico",
                 keyboardType: TextInputType.emailAddress,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onEmailChange,
+                errorMessage: registerForm.isFormPosted
+                    ? registerForm.email.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconLocation, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconLocation, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -126,15 +141,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Ubicación",
                 keyboardType: TextInputType.streetAddress,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onUbicationChanged,
+                errorMessage: registerForm.isFormPosted
+                    ? registerForm.ubication.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconPhone, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconPhone, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -142,15 +162,20 @@ class _LoginForm extends StatelessWidget {
               child: CustomTextFormField(
                 label: "Teléfono",
                 keyboardType: TextInputType.phone,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onPhoneChanged,
+                errorMessage: registerForm.isFormPosted
+                    ? registerForm.phone.errorMessage
+                    : null,
               ),
             ),
           ]),
           const SizedBox(
             height: 30,
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            SvgIcon(assetIcon: iconPassword, size: sizeIcons),
-            SizedBox(
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SvgIcon(assetIcon: iconPassword, size: sizeIcons),
+            const SizedBox(
               width: sizeWidth,
             ),
             SizedBox(
@@ -159,6 +184,11 @@ class _LoginForm extends StatelessWidget {
                 obscureText: true,
                 label: "Contraseña",
                 keyboardType: TextInputType.visiblePassword,
+                onChanged:
+                    ref.read(registerFormProvider.notifier).onPasswordChanged,
+                errorMessage: registerForm.isFormPosted
+                    ? registerForm.password.errorMessage
+                    : null,
               ),
             ),
           ]),
@@ -174,10 +204,7 @@ class _LoginForm extends StatelessWidget {
                 style: textStyle.bodyMedium,
               ),
               TextButton(
-                  onPressed: () {
-                    // ignore: avoid_print
-                    print("boton presionado");
-                  },
+                  onPressed: () => context.push('/login'),
                   child: Text(
                     'Click aquí',
                     style: textStyle.titleSmall,
@@ -185,14 +212,18 @@ class _LoginForm extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          const SizedBox(
+          SizedBox(
             width: 150,
             height: 45,
             child: CustomFilledButton(
                 text: "Registrar",
                 buttonColor: colorTertiaryTheme,
-                colorText: colorSecondaryTheme),
-          ),
+                colorText: colorSecondaryTheme,
+                onPressed: registerForm.isPosting
+                ? null 
+                : ref.read(registerFormProvider.notifier).onFormSubmit("user_petlover"),),
+           ),
+          
           const Spacer(
             flex: 2,
           ),
