@@ -72,12 +72,12 @@ class _FoundationForm extends ConsumerWidget {
     const sizeIcons = Size.square(40);
     const sizeWidth = 10.0;
 
-    const iconUser = "icons/user-square.svg";
+    const iconUser = "icons/edificio.svg";
     const iconMail = "icons/mail.svg";
     const iconLocation = "icons/location.svg";
     const iconPhone = "icons/device-mobile.svg";
     const iconPassword = "icons/lock.svg";
-    const iconEntity = "icons/edificio.svg";
+   
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
