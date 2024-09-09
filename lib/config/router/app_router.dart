@@ -1,8 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:woofriend/features/BL_woofriend/presentation/screens/animal_update_screen.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/screens/home_screen.dart';
 import 'package:woofriend/features/auth/presentation/screen/screens.dart';
 
+import '../../features/BL_woofriend/presentation/screens/animal_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import 'app_router_notifier.dart';
 
@@ -25,11 +27,11 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
-        path: '/register',
+        path: '/petlover',
         builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: '/foundation-register',
+        path: '/foundation',
         builder: (context, state) => const FoundationRegisterScreen(),
       ),
 
@@ -37,6 +39,20 @@ final goRouterProvider = Provider((ref) {
       GoRoute(
         path: '/',
         builder: (context, state) => const HomeScreen(),
+      ),
+
+      GoRoute(
+        path: '/animal/:id', // /product/new
+        builder: (context, state) => AnimalScreen(
+          animalId: state.pathParameters['id'] ?? 'no-id',
+        ),
+      ),
+
+      GoRoute(
+        path: '/animalUpdate/:id', // /product/new
+        builder: (context, state) => AnimalUpdateScreen(
+          animalId: state.pathParameters['id'] ?? 'no-id',
+        ),
       ),
     ],
     redirect: (context, state) {
@@ -47,16 +63,18 @@ final goRouterProvider = Provider((ref) {
         return null;
 
       if (authStatus == AuthStatus.notAuthenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/register') return null;
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/petlover' ||
+            isGoingTo == '/foundation') return null;
 
         return '/login';
       }
 
       if (authStatus == AuthStatus.authenticated) {
         if (isGoingTo == '/login' ||
-            isGoingTo == '/register' ||
+            isGoingTo == '/petlover' ||
             isGoingTo == '/splash' ||
-            isGoingTo == '/bussiness-register') {
+            isGoingTo == '/foundation') {
           return '/';
         }
       }

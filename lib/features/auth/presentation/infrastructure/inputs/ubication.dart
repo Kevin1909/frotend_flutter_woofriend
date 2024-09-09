@@ -15,7 +15,7 @@ class Ubication extends FormzInput<String, UbicationError> {
     if (isValid || isPure) return null;
 
     if (displayError == UbicationError.empty) return 'El campo es requerido';
-    if (displayError == UbicationError.length) return 'La ubicación debe contener por lo menos 8 carácteres';
+    if (displayError == UbicationError.length) return 'Debe tener por lo menos 8 carácteres';
 
     return null;
   }

@@ -12,10 +12,13 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const background = colorPrimaryTheme;
+    const backgroundImg = colorSecondaryTheme;
     final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        backgroundColor: background,
         body: IconBackground(
             child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -24,16 +27,31 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(
               height: 80,
             ),
-            const Icon(
-              Icons.pets_sharp,
-              color: Colors.white,
-              size: 200,
-            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 10
+                  
+                      
+
+                  
+                      
+                    )
+                  ]),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset('assets/images/Woofriend_logo_blanco.png',
+                        fit: BoxFit.cover, height: 70)),
+              ),
+            
             const SizedBox(
               height: 60,
             ),
             Container(
-              height: size.height - 280,
+              height: size.height - 250,
               width: double.infinity,
               margin: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
@@ -51,20 +69,49 @@ class LoginScreen extends StatelessWidget {
 class _LoginForm extends ConsumerWidget {
   const _LoginForm();
 
-  void showSnackbar( BuildContext context, String message ) {
+  void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message))
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void openDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFF8F7F7),
+        actionsAlignment: MainAxisAlignment.spaceAround,
+        icon: const Icon(Icons.pets_rounded),
+        title: const Text('¿Cómo te quieres registrar?'),
+        contentTextStyle: const TextStyle(
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+        content: const Text(
+          "Registrarse como:",
+        ),
+        actions: [
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.black12)),
+              onPressed: () => context.push('/petlover'),
+              child: const Text('Petlover')),
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.black12)),
+              onPressed: () => context.push('/foundation'),
+              child: const Text('Fundación')),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loginForm = ref.watch(loginFormProvider);
-    
     ref.listen(authProvider, (previous, next) {
-      if ( next.errorMessage.isEmpty ) return;
-      showSnackbar( context, next.errorMessage );
+      if (next.errorMessage.isEmpty) return;
+      showSnackbar(context, next.errorMessage);
     });
 
     final textStyle = Theme.of(context).textTheme;
@@ -84,9 +131,8 @@ class _LoginForm extends ConsumerWidget {
             label: "Correo",
             keyboardType: TextInputType.emailAddress,
             onChanged: ref.read(loginFormProvider.notifier).onEmailChange,
-            errorMessage: loginForm.isFormPosted ?
-               loginForm.email.errorMessage 
-               : null,
+            errorMessage:
+                loginForm.isFormPosted ? loginForm.email.errorMessage : null,
           ),
           const SizedBox(
             height: 30,
@@ -95,10 +141,8 @@ class _LoginForm extends ConsumerWidget {
             label: "Contraseña",
             obscureText: true,
             onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
-            onFieldSubmitted: ( _ ) => ref.read(loginFormProvider.notifier).onFormSubmit(),
-            errorMessage: loginForm.isFormPosted ?
-               loginForm.password.errorMessage 
-               : null,
+            errorMessage:
+                loginForm.isFormPosted ? loginForm.password.errorMessage : null,
           ),
           const SizedBox(
             height: 20,
@@ -129,39 +173,25 @@ class _LoginForm extends ConsumerWidget {
             width: 150,
             height: 45,
             child: CustomFilledButton(
-                text: "Ingresar",
-                buttonColor: colorTertiaryTheme,
-                colorText: colorSecondaryTheme,
-                onPressed: loginForm.isPosting
-                ? null 
-                : ref.read(loginFormProvider.notifier).onFormSubmit,
-                ),
+              text: "Ingresar",
+              buttonColor: colorTertiaryTheme,
+              colorText: colorSecondaryTheme,
+              onPressed: loginForm.isPosting
+                  ? null
+                  : ref.read(loginFormProvider.notifier).onFormSubmit,
+            ),
           ),
           const SizedBox(
-            height: 10,
+            height: 20,
           ),
           SizedBox(
             width: 150,
             height: 45,
             child: CustomFilledButton(
-              text: "Registrarse como petlover",
-              buttonColor: colorTertiaryTheme,
-              colorText: colorSecondaryTheme,
-              onPressed: ()=> context.push('/register'),
-            ),
-          ),
-
-          const Spacer(),
-
-          SizedBox(
-            width: 150,
-            height: 45,
-            child: CustomFilledButton(
-              text: "Registrarse como fundación",
-              buttonColor: colorTertiaryTheme,
-              colorText: colorSecondaryTheme,
-              onPressed: ()=> context.push('/foundation-register'),
-            ),
+                text: "Registrarse",
+                buttonColor: colorTertiaryTheme,
+                colorText: colorSecondaryTheme,
+                onPressed: () => openDialog(context)),
           ),
         ],
       ),

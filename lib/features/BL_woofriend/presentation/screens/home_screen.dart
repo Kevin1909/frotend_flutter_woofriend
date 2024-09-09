@@ -3,28 +3,30 @@
 import 'package:flutter/material.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/views/pets_view.dart';
+import 'package:woofriend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:woofriend/features/shared/shared.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    TabController tabController = TabController(length: 5, vsync: this);
+    TabController tabController = TabController(length: 4, vsync: this);
+    final isUserFoundation = ref.watch(authProvider).isFoundation;
 
     const backgroundColorAppBar = colorPrimaryTheme;
     const colorButtonBar = Color.fromARGB(255, 51, 53, 55);
     const sizeIcon = 28.0;
-    const sizeIconBar = Size.square(24);
+    const sizeIconBar = Size.square(24.0);
 
     const searchIcon = "icons/magnify_search_zoom_icon.svg";
     const circleUser = "icons/circle_user_icon.svg";
-    const chatIcon = "icons/chat_dialog_forum_speaking_icon.svg";
 
     @override
     void initState() {
@@ -44,21 +46,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         bottomOpacity: 1.0,
         backgroundColor: backgroundColorAppBar,
         title: const Text('Woofriend'),
-        actions: const [
-          CustomButton(
-            assetIcon: chatIcon,
-            sizeIcon: sizeIconBar,
-            color: colorButtonBar,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(isUserFoundation ? Icons.pets_rounded : null),
+
+            // const Icon( Icons.favorite_border )
+            // icon: const Icon( Icons.favorite_rounded, color: Colors.red )
           ),
-          CustomButton(
+          const CustomButton(
             assetIcon: circleUser,
             sizeIcon: sizeIconBar,
             color: colorButtonBar,
           ),
-          CustomButton(
+          const CustomButton(
               assetIcon: searchIcon,
               sizeIcon: sizeIconBar,
-              color: colorButtonBar)
+              color: colorButtonBar),
+          IconButton(
+              iconSize: sizeIcon,
+              onPressed: ref.read(authProvider.notifier).logout,
+              icon: const Icon(Icons.logout_rounded))
         ],
         bottom: TabBar(
           controller: tabController,
@@ -69,11 +77,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Tab(
                 icon: Icon(
               Icons.home_filled,
-              size: sizeIcon,
-            )),
-            Tab(
-                icon: Icon(
-              Icons.pets_sharp,
               size: sizeIcon,
             )),
             Tab(
@@ -95,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: TabBarView(controller: tabController, children: const [
-        Text("Hola"),
         PetsView(),
         Text("Hola"),
         Text("Hola"),
@@ -115,7 +117,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.assetIcon,
     required this.sizeIcon,
-    this.color = Colors.black, 
+    this.color = Colors.black,
     this.ontap,
   });
 

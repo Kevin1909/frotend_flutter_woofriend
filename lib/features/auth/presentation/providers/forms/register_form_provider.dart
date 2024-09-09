@@ -14,8 +14,7 @@ final registerFormProvider =
 
 //! 2 - Como implementamos un notifier
 class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
-  final Function(String, String, String, String, String, List<String>)
-      registerUserCallback;
+  final Future<bool> Function(Map<String, dynamic>) registerUserCallback;
 
   RegisterFormNotifier({
     required this.registerUserCallback,
@@ -86,23 +85,36 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         ]));
   }
 
-  onFormSubmit(String rol) async {
+  onFormSubmitRegister(String rol) async {
     List<String> roles = [];
 
     _touchEveryField();
 
     if (!state.isValid) return;
 
-    state = state.copyWith(isPosting: true);
+    state = state.copyWith(
+      isPosting: true,
+    );
 
     roles.add(rol);
 
-    await registerUserCallback(state.email.value, state.password.value,
-        state.name.value, state.phone.value, state.ubication.value, roles);
+    Map<String, dynamic> userData = {
+      "id": null,
+      "email": state.email.value,
+      "password": state.password.value,
+      "name": state.name.value,
+      "ubication": state.ubication.value,
+      "phone": state.phone.value,
+      "roles": roles
+    };
 
+    final registeredUser = await registerUserCallback(userData);
+    if (registeredUser) state = state.copyWith(userRegistered: true,);
+    
     roles.remove(rol);
-
+    state = state.copyWith(userRegistered: false,);
     state = state.copyWith(isPosting: false);
+    
   }
 
   _touchEveryField() {
@@ -126,6 +138,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
 //! 1 - State del provider
 class RegisterFormState {
   final bool isPosting;
+  final bool userRegistered;
   final bool isFormPosted;
   final bool isValid;
   final Email email;
@@ -136,6 +149,7 @@ class RegisterFormState {
 
   RegisterFormState({
     this.isPosting = false,
+    this.userRegistered = false,
     this.isFormPosted = false,
     this.isValid = false,
     this.email = const Email.pure(),
@@ -147,6 +161,7 @@ class RegisterFormState {
 
   RegisterFormState copyWith({
     bool? isPosting,
+    bool? userRegistered,
     bool? isFormPosted,
     bool? isValid,
     Email? email,
@@ -157,6 +172,7 @@ class RegisterFormState {
   }) =>
       RegisterFormState(
         isPosting: isPosting ?? this.isPosting,
+        userRegistered: userRegistered ?? this.userRegistered,
         isFormPosted: isFormPosted ?? this.isFormPosted,
         isValid: isValid ?? this.isValid,
         email: email ?? this.email,

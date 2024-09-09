@@ -15,7 +15,7 @@ class Phone extends FormzInput<String, PhoneError> {
     if (isValid || isPure) return null;
 
     if (displayError == PhoneError.empty) return 'El campo es requerido';
-    if (displayError == PhoneError.length) return 'El número de teléfono no debe ser menor a 10 dígitos';
+    if (displayError == PhoneError.length) return 'No debe ser menor a 10 dígitos';
 
     return null;
   }

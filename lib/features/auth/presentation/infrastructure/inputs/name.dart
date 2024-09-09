@@ -15,7 +15,7 @@ class Name extends FormzInput<String, NameError> {
     if (isValid || isPure) return null;
 
     if (displayError == NameError.empty) return 'El campo es requerido';
-    if (displayError == NameError.length) return 'El nombre debe tener por lo menos 8 carácteres';
+    if (displayError == NameError.length) return 'Debe tener por lo menos 8 carácteres';
 
     return null;
   }

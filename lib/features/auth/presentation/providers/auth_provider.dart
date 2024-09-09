@@ -42,22 +42,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // state =state.copyWith(user: user, authStatus: AuthStatus.authenticated)
   }
 
-  Future<void> registerUser(
-    String email, 
-    String password, 
-    String name,
-    String phone, 
-    String ubication, 
-    List<String> roles) async {
+  Future<bool> registerUser(Map<String, dynamic> user) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
-      final user = await authRepository.register(email, password, name, phone, ubication, roles);
-      _setLoggedUser(user);
+      await authRepository.registerUpdateUser(user);
+      return true;
     } on CustomError catch (e) {
       logout(e.message);
+      return false;
     } catch (e) {
       logout('Error no controlado');
+      return false;
     }
   }
 
@@ -75,6 +71,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void _setLoggedUser(User user) async {
     await keyValueStorageService.setKeyValue('token', user.token);
+    if (user.roles.contains("user_foundation")) state = state.copyWith(isFoundation: true);
 
     state = state.copyWith(
       user: user,
@@ -87,6 +84,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await keyValueStorageService.removeKey('token');
 
     state = state.copyWith(
+        isFoundation: false,
         authStatus: AuthStatus.notAuthenticated,
         user: null,
         errorMessage: errorMessage);
@@ -98,20 +96,26 @@ enum AuthStatus { checking, authenticated, notAuthenticated }
 class AuthState {
   final AuthStatus authStatus;
   final User? user;
+  final bool isFoundation;
   final String errorMessage;
 
   AuthState(
       {this.authStatus = AuthStatus.checking,
+      this.isFoundation = false,
       this.user,
       this.errorMessage = ''});
 
   AuthState copyWith({
     AuthStatus? authStatus,
+    bool? registeredUser,
+    bool? isFoundation,
     User? user,
     String? errorMessage,
   }) =>
       AuthState(
-          authStatus: authStatus ?? this.authStatus,
-          user: user ?? this.user,
-          errorMessage: errorMessage ?? this.errorMessage);
+        authStatus: authStatus ?? this.authStatus,
+        user: user ?? this.user,
+        errorMessage: errorMessage ?? this.errorMessage,
+        isFoundation: isFoundation ?? this.isFoundation,
+      );
 }

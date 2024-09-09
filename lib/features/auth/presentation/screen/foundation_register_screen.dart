@@ -31,8 +31,7 @@ class FoundationRegisterScreen extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {
-                      //if ( !context.canPop() ) return;
-                      //context.pop();
+                      context.pop();
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
                         size: 40, color: Colors.white)),
@@ -46,7 +45,7 @@ class FoundationRegisterScreen extends StatelessWidget {
               height: 20,
             ),
             Container(
-              height: size.height - 40,
+              height: size.height - 35,
               width: double.infinity,
               margin: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
@@ -63,10 +62,35 @@ class FoundationRegisterScreen extends StatelessWidget {
 
 class _FoundationForm extends ConsumerWidget {
   const _FoundationForm();
+  void openDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 255, 247, 247),
+        actionsAlignment: MainAxisAlignment.spaceAround,
+        icon: const Icon(Icons.create_rounded),
+        title: const Text('¡Cuenta registrada satisfactoriamente!'),
+        actions: [
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.black12)),
+              onPressed: () {
+                context.push('/login');
+              },
+              child: const Text('Ingresar')),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final foundationForm = ref.watch(registerFormProvider);
+    ref.listen(registerFormProvider, (previous, next) {
+      if (!next.userRegistered) return;
+      openDialog(context);
+    });
 
     final textStyle = Theme.of(context).textTheme;
     const sizeIcons = Size.square(40);
@@ -77,7 +101,6 @@ class _FoundationForm extends ConsumerWidget {
     const iconLocation = "icons/location.svg";
     const iconPhone = "icons/device-mobile.svg";
     const iconPassword = "icons/lock.svg";
-   
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -86,7 +109,7 @@ class _FoundationForm extends ConsumerWidget {
           const SizedBox(
             height: 35,
           ),
-          Text("Registrar entidad", style: textStyle.titleMedium),
+          Text("Registrar fundación", style: textStyle.titleMedium),
           const SizedBox(
             height: 35,
           ),
@@ -140,7 +163,7 @@ class _FoundationForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Ubicación",
+                label: "Ciudad y departamento",
                 keyboardType: TextInputType.streetAddress,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onUbicationChanged,
@@ -212,7 +235,9 @@ class _FoundationForm extends ConsumerWidget {
                   ))
             ],
           ),
-          const Spacer(),
+          const SizedBox(
+            height: 25,
+          ),
           SizedBox(
             width: 150,
             height: 45,
@@ -222,14 +247,12 @@ class _FoundationForm extends ConsumerWidget {
               colorText: colorSecondaryTheme,
               onPressed: foundationForm.isPosting
                   ? null
-                  : ref
+                  : () => ref
                       .read(registerFormProvider.notifier)
-                      .onFormSubmit("user_foundation"),
+                      .onFormSubmitRegister("user_foundation"),
             ),
           ),
-          const Spacer(
-            flex: 2,
-          ),
+          const Spacer()
         ],
       ),
     );
