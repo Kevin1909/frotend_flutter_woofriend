@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/views/pets_view.dart';
 import 'package:woofriend/features/auth/presentation/providers/auth_provider.dart';
@@ -48,8 +49,11 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
         title: const Text('Woofriend'),
         actions: [
           IconButton(
-            onPressed: () {},
             icon: Icon(isUserFoundation ? Icons.pets_rounded : null),
+            onPressed: () {
+             if (isUserFoundation) context.push('/animalUpdate/new');
+             null;
+             }
 
             // const Icon( Icons.favorite_border )
             // icon: const Icon( Icons.favorite_rounded, color: Colors.red )

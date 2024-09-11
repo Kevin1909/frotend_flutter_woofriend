@@ -47,7 +47,7 @@ class PetsScreenState extends ConsumerState<PetsScreen> {
     final user = ref.watch(authProvider).user;
 
     return SizedBox(
-      height: size.height,
+      height: (size.height * 0.9) -120,
       child: Column(
         children: [
           Expanded(
@@ -77,12 +77,11 @@ class _SlideAnimals extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    bool isMatched() {
+    bool isMatchedUser() {
       if (animal.user!.id == user!.id) return true;
       return false;
     }
 
-    ;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -103,7 +102,13 @@ class _SlideAnimals extends StatelessWidget {
                   height: 200,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: const Placeholder()),
+                      child: FadeInImage(
+                fit: BoxFit.fill,
+                width: double.infinity,
+                height: 300,
+                placeholder: const AssetImage('assets/loaders/wait_dog.gif'), 
+                image: NetworkImage(animal.photo),
+              )),
                 ),
               ),
               const SizedBox(
@@ -141,15 +146,33 @@ class _SlideAnimals extends StatelessWidget {
                         ),
                       )
                     ]),
-                    if(isMatched()) Align(
-                      alignment: Alignment.bottomRight,
-                      child: FloatingActionButton(
-                        child: const Icon(Icons.add),
-                        onPressed: () {
-                          context.push('/animalUpdate/${animal.id}');
-                        },
+                    const SizedBox(height: 10,),
+
+                    if(isMatchedUser()) Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [ 
+                          
+                          const SizedBox(
+                            width: 120
+                          ),
+                          IconButton(
+                          iconSize: 25,
+                          icon: const Icon(Icons.update_rounded),
+                          onPressed: () {
+                            context.push('/animalUpdate/${animal.id}');
+                          },
+                        ),
+                        IconButton(
+                          iconSize: 25,
+                          icon: const Icon(Icons.delete_forever_rounded),
+                          onPressed: () {
+                            //context.push('/animalUpdate/${animal.id}');
+                          },
+                        ),
+                        
+                        ]
                       ),
-                    ),
                     const SizedBox()
                   ])
             ]),

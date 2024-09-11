@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:woofriend/features/BL_woofriend/presentation/providers/animals_providers/animal_provider.dart';
 
@@ -29,6 +30,7 @@ class AnimalUpdateScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: const Color(0xFFF8F7F7),
         appBar: AppBar(
           title: const Text('Editar Animal'),
           actions: [
@@ -69,6 +71,7 @@ class AnimalUpdateScreen extends ConsumerWidget {
                 .then((value) {
               if (!value) return;
               showSnackbar(context);
+              context.pop();
             });
           },
           child: const Icon(Icons.save_as_outlined),
@@ -91,6 +94,9 @@ class _ProductView extends ConsumerWidget {
 
     return ListView(
       children: [
+        const SizedBox(
+          height: 25,
+        ),
         SizedBox(
           height: 250,
           width: 600,
@@ -138,53 +144,64 @@ class _AnimalInformation extends ConsumerWidget {
             label: 'Tipo de animal',
             keyboardType: TextInputType.text,
             initialValue: animalForm.typeAnimal.value,
-            onChanged:
-                ref.read(animalFormProvider(animal).notifier).onTypeAnimalChanged,
+            onChanged: ref
+                .read(animalFormProvider(animal).notifier)
+                .onTypeAnimalChanged,
             errorMessage: animalForm.typeAnimal.errorMessage,
           ),
           CustomUpdateField(
-
             keyboardType: TextInputType.text,
             label: 'Raza',
             initialValue: animalForm.race.value,
-            onChanged: ref.read(animalFormProvider(animal).notifier).onRaceChanged,
+            onChanged:
+                ref.read(animalFormProvider(animal).notifier).onRaceChanged,
             errorMessage: animalForm.race.errorMessage,
           ),
-
           CustomUpdateField(
-            
+            isBottomField: true,
             keyboardType: TextInputType.datetime,
             label: 'Nacimiento',
             initialValue: animalForm.birthdate.value,
-            onChanged: ref.read(animalFormProvider(animal).notifier).onBirthdateChanged,
+            onChanged: ref
+                .read(animalFormProvider(animal).notifier)
+                .onBirthdateChanged,
             errorMessage: animalForm.birthdate.errorMessage,
+          ),
+          const SizedBox(
+            height: 27,
           ),
           CustomUpdateField(
             maxLines: 6,
+            isTopField: true,
             isBottomField: true,
             keyboardType: TextInputType.text,
             label: 'Características',
             initialValue: animalForm.characteristics.value,
-            onChanged: ref.read(animalFormProvider(animal).notifier).onCharacteristicsChanged,
+            onChanged: ref
+                .read(animalFormProvider(animal).notifier)
+                .onCharacteristicsChanged,
             errorMessage: animalForm.characteristics.errorMessage,
           ),
           const SizedBox(height: 15),
           const Text('Adicional'),
-
           const SizedBox(height: 15),
           CustomUpdateField(
             isTopField: true,
             label: 'Registro de vacunas',
             keyboardType: TextInputType.text,
             initialValue: animalForm.vaccinationrecord,
-            onChanged: ref.read(animalFormProvider(animal).notifier).onVaccinationRecordChanged,
+            onChanged: ref
+                .read(animalFormProvider(animal).notifier)
+                .onVaccinationRecordChanged,
           ),
-           CustomUpdateField(
-            isTopField: true,
+          CustomUpdateField(
+            isBottomField: true,
             label: 'Patologías',
             keyboardType: TextInputType.text,
             initialValue: animalForm.pathologiesdisabilities,
-            onChanged: ref.read(animalFormProvider(animal).notifier).onPathologiesDisabilitiesChanged,
+            onChanged: ref
+                .read(animalFormProvider(animal).notifier)
+                .onPathologiesDisabilitiesChanged,
           ),
           const SizedBox(height: 100),
         ],
@@ -193,19 +210,18 @@ class _AnimalInformation extends ConsumerWidget {
   }
 }
 
-
 class _ImageGallery extends StatelessWidget {
   final String image;
   const _ImageGallery({required this.image});
 
   @override
   Widget build(BuildContext context) {
-     late ImageProvider imageProvider;
-        if (image.startsWith('http')) {
-          imageProvider = NetworkImage(image);
-        } else {
-          imageProvider = FileImage(File(image));
-        }
+    late ImageProvider imageProvider;
+    if (image.startsWith('http')) {
+      imageProvider = NetworkImage(image);
+    } else {
+      imageProvider = FileImage(File(image));
+    }
     if (image == "") {
       return ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -213,16 +229,14 @@ class _ImageGallery extends StatelessWidget {
     }
 
     return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              child:
-               FadeInImage(
-                fit: BoxFit.cover,
-                image: imageProvider,
-                placeholder:
-                    const AssetImage('assets/loaders/bottle-loader.gif'),
-              )),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          child: FadeInImage(
+            fit: BoxFit.cover,
+            image: imageProvider,
+            placeholder: const AssetImage('assets/loaders/bottle-loader.gif'),
+          )),
     );
   }
 }

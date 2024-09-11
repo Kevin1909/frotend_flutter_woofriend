@@ -13,7 +13,6 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const background = colorPrimaryTheme;
-    const backgroundImg = colorSecondaryTheme;
     final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -32,19 +31,15 @@ class LoginScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.white,
+                      color: Colors.black,
                       blurRadius: 10
-                  
-                      
-
-                  
                       
                     )
                   ]),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.asset('assets/images/Woofriend_logo_blanco.png',
-                        fit: BoxFit.cover, height: 70)),
+                    child: Image.asset('assets/images/dog_cute.png',
+                        fit: BoxFit.cover, height:125,)),
               ),
             
             const SizedBox(

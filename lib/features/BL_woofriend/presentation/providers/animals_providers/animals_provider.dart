@@ -57,7 +57,7 @@ class AnimalsNotifier extends StateNotifier<AnimalsState> {
     state = state.copyWith(
         isLastPage: false,
         isLoading: false,
-        offset: state.offset + 6,
+        offset: state.offset + 5,
         animals: [...state.animals, ...animals]);
   }
 }

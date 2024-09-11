@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:woofriend/config/config.dart';
 
@@ -19,18 +20,19 @@ class AnimalsDatasourceImpl extends AnimalsDatasource {
 
   Future<String> _uploadFile(String path) async {
     try {
-      final fileName = path.split('/').last;
-      final FormData data = FormData.fromMap({
-        'file': MultipartFile.fromFileSync(
-          path,
-          filename: fileName,
-        )
-      });
+      if (!path.startsWith("http")) {
+        final fileName = path.split('/').last;
+        final FormData data = FormData.fromMap({
+          'file': MultipartFile.fromFileSync(
+            path,
+            filename: fileName,
+          )
+        });
+        final response = await dio.post('/files/animal', data: data);
 
-      final respose = await dio.post('/files/animal',
-          data: data,);
-
-      return respose.data;
+        return response.data["secureUrl"];
+      }
+      return path;
     } catch (e) {
       throw Exception();
     }
@@ -44,7 +46,7 @@ class AnimalsDatasourceImpl extends AnimalsDatasource {
       final String url = (animalId == null) ? '/animals' : '/animals/$animalId';
 
       animalLike.remove('id');
-      animalLike['photo'] = await _uploadFile(animalLike['photo']);
+      animalLike["photo"] = await _uploadFile(animalLike['photo']);
 
       final response = await dio.request(url,
           data: animalLike, options: Options(method: method));
@@ -75,7 +77,8 @@ class AnimalsDatasourceImpl extends AnimalsDatasource {
   Future<List<Animal>> getAnimalsByPage(
       {int limit = 10, int offset = 0}) async {
     try {
-      final response = await dio.get<List>('/animals');
+      final response =
+          await dio.get<List>('/animals?limit=$limit&offset=$offset');
       final List<Animal> animals = [];
       for (final animal in response.data ?? []) {
         animals.add(AnimalMapper.jsonToEntity(animal));

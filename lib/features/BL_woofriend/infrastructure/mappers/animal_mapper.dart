@@ -9,8 +9,12 @@ class AnimalMapper {
       birthdate: json['birthdate'],
       race: json['race'],
       characteristics: json['characteristics'],
-      vaccinationrecord: json['vaccinationrecord'] ?? "",
-      pathologiesdisabilities: json['pathologiesdisabilities'] ?? "",
+      vaccinationrecord: (json['vaccinationrecord'] == "")
+          ? "No tiene vacunas"
+          : json['vaccinationrecord'],
+      pathologiesdisabilities: (json['pathologiesdisabilities'] == "")
+          ? "Sin patologías y sin incapacidades"
+          : json['pathologiesdisabilities'],
       photo: json['photo'] ?? "",
       user: UserMapper.userJsonToEntity(json['user']));
 }
