@@ -32,8 +32,8 @@ class RegisterScreen extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {
-                      
-                      context.pop();
+                      //if ( !context.canPop() ) return;
+                      //context.pop();
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
                         size: 40, color: Colors.white)),
@@ -124,7 +124,7 @@ class _RegisterForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Nombre y apellido",
+                label: "Nombre",
                 keyboardType: TextInputType.name,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onNameChanged,
@@ -166,7 +166,7 @@ class _RegisterForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Ciudad y departamento",
+                label: "Ubicación",
                 keyboardType: TextInputType.streetAddress,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onUbicationChanged,

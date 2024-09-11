@@ -63,7 +63,17 @@ class _AnimalDetails extends StatelessWidget {
         const SizedBox(
           height: 16,
         ),
-        _InfoAditionalAnimal(animal: animal, size: size,)
+        _InfoAditionalAnimal(
+          animal: animal,
+          size: size,
+        ),
+         const SizedBox(
+          height: 16,
+        ),
+        const _TextIcon(),
+         const SizedBox(
+          height: 16,
+        ),
       ],
     );
   }
@@ -173,7 +183,6 @@ class _InfoAditionalAnimal extends StatelessWidget {
   const _InfoAditionalAnimal({
     required this.animal,
     required this.size,
-    
   });
   final Animal? animal;
   final Size size;
@@ -212,6 +221,19 @@ class _InfoAditionalAnimal extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TextIcon extends StatelessWidget {
+  const _TextIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: () {},
+      icon: const Icon(Icons.check_circle_outline_outlined),
+      label: const Text('Adoptar'),
     );
   }
 }
