@@ -19,7 +19,8 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     TabController tabController = TabController(length: 4, vsync: this);
-    final isUserFoundation = ref.watch(authProvider).isFoundation;
+    final userProvider = ref.watch(authProvider);
+    final userId = userProvider.user!.id;
 
     const backgroundColorAppBar = colorPrimaryTheme;
     const colorButtonBar = Color.fromARGB(255, 51, 53, 55);
@@ -49,16 +50,18 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
         title: const Text('Woofriend'),
         actions: [
           IconButton(
-            icon: Icon(isUserFoundation ? Icons.pets_rounded : null),
-            onPressed: () {
-             if (isUserFoundation) context.push('/animalUpdate/new');
-             null;
-             }
+              icon: Icon(userProvider.isFoundation ? Icons.pets_rounded : null),
+              onPressed: () {
+                if (userProvider.isFoundation)
+                  context.push('/animalUpdate/new');
+                null;
+              }
 
-            // const Icon( Icons.favorite_border )
-            // icon: const Icon( Icons.favorite_rounded, color: Colors.red )
-          ),
-          const CustomButton(
+              // const Icon( Icons.favorite_border )
+              // icon: const Icon( Icons.favorite_rounded, color: Colors.red )
+              ),
+          CustomButton(
+            ontap: () => context.push('/userProfile/$userId'),
             assetIcon: circleUser,
             sizeIcon: sizeIconBar,
             color: colorButtonBar,

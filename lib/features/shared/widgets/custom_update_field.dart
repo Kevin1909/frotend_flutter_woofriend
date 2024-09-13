@@ -35,7 +35,6 @@ class CustomUpdateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final textStyle = Theme.of(context).textTheme;
 
     final border = OutlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
@@ -67,7 +66,7 @@ class CustomUpdateField extends StatelessWidget {
         validator: validator,
         obscureText: obscureText,
         keyboardType: keyboardType,
-        style: textStyle.bodyMedium,
+        style: const TextStyle(fontSize: 16, color: Colors.black54),
         maxLines: maxLines,
         initialValue: initialValue,
         decoration: InputDecoration(

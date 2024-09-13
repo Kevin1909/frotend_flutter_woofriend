@@ -29,5 +29,10 @@ class AnimalsRepositoryImpl extends AnimalsRepository {
   Future<List<Animal>> searchAnimalByTerm(String term) {
     return datasource.searchAnimalByTerm(term);
   }
+  
+  @override
+  Future<bool> deleteAnimal(String id) {
+    return datasource.deleteAnimal(id);
+  }
 
 }

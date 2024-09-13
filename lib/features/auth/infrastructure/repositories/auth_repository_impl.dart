@@ -25,5 +25,10 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<User> registerUpdateUser(Map<String,dynamic> user) {
     return dataSource.registerUpdateUser(user);
   }
+  
+  @override
+  Future<User> getUserById(String id) {
+    return dataSource.getUserById(id);
+  }
 
 }

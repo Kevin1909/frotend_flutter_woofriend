@@ -42,7 +42,7 @@ class PetsViewState extends ConsumerState<PetsView> {
             delegate: SliverChildBuilderDelegate((context, index) {
           return Column(
             children: [
-              PetsScreen(animals: animalsForAdoption.animals, loadNextPage: () => ref.read(animalsProvider.notifier).loadNextPage(),),
+              PetsScreen(animals: animalsForAdoption.animals, loadNextPage: () => ref.read(animalsProvider.notifier).loadNextPage(), deleteAnimal: ref.read(animalsProvider.notifier).deleteAnimal),
             
                
                 

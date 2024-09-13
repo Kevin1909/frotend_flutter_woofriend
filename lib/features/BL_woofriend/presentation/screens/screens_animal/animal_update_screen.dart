@@ -6,11 +6,11 @@ import 'package:go_router/go_router.dart';
 
 import 'package:woofriend/features/BL_woofriend/presentation/providers/animals_providers/animal_provider.dart';
 
-import '../../../shared/infrastructure/services/camera_gallery_service_impl.dart';
-import '../../../shared/widgets/custom_update_field.dart';
-import '../../../shared/widgets/full_screen_loader.dart';
-import '../../domain/domain.dart';
-import '../providers/animals_providers/providers.dart';
+import '../../../../shared/infrastructure/services/camera_gallery_service_impl.dart';
+import '../../../../shared/widgets/custom_update_field.dart';
+import '../../../../shared/widgets/full_screen_loader.dart';
+import '../../../domain/domain.dart';
+import '../../providers/animals_providers/providers.dart';
 
 class AnimalUpdateScreen extends ConsumerWidget {
   final String animalId;

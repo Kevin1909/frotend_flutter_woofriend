@@ -7,6 +7,8 @@ import 'package:woofriend/features/auth/presentation/providers/forms/register_fo
 
 import 'package:woofriend/features/shared/shared.dart';
 
+import '../providers/auth_provider.dart';
+
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
@@ -65,6 +67,12 @@ class RegisterScreen extends StatelessWidget {
 class _RegisterForm extends ConsumerWidget {
   const _RegisterForm();
 
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
   void openDialog(BuildContext context) {
     showDialog(
       barrierDismissible: false,
@@ -93,6 +101,10 @@ class _RegisterForm extends ConsumerWidget {
     ref.listen(registerFormProvider, (previous, next) {
       if (!next.userRegistered) return;
       openDialog(context);
+    });
+    ref.listen(authProvider, (previous, next) {
+      if (next.errorMessage.isEmpty) return;
+      showSnackbar(context, "Ya existe este correo");
     });
 
     final textStyle = Theme.of(context).textTheme;
@@ -253,7 +265,7 @@ class _RegisterForm extends ConsumerWidget {
                     : () {
                         ref
                             .read(registerFormProvider.notifier)
-                            .onFormSubmitRegister("user_petlover");
+                            .onFormSubmitRegister("user_petlover", "new");
                         
                       }),
           ),

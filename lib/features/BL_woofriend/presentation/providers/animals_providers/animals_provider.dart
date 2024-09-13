@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 import '../../../domain/domain.dart';
 import 'animals_repository_provider.dart';
 
@@ -13,8 +12,7 @@ final animalsProvider =
 class AnimalsNotifier extends StateNotifier<AnimalsState> {
   final AnimalsRepository animalsRepository;
 
-  AnimalsNotifier({required this.animalsRepository})
-      : super(AnimalsState()) {
+  AnimalsNotifier({required this.animalsRepository}) : super(AnimalsState()) {
     loadNextPage();
   }
 
@@ -25,7 +23,7 @@ class AnimalsNotifier extends StateNotifier<AnimalsState> {
           state.animals.any((element) => element.id == animal.id);
 
       if (!isAnimalInList) {
-        state = state.copyWith(animals: [...state.animals, animal]);
+        state = state.copyWith(animals: [animal, ...state.animals,]);
         return true;
       }
 
@@ -36,6 +34,23 @@ class AnimalsNotifier extends StateNotifier<AnimalsState> {
               )
               .toList());
       return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteAnimal(String id) async {
+    try {
+      final animalIsDeleted = await animalsRepository.deleteAnimal(id);
+      if (animalIsDeleted) {
+        final animal = state.animals.firstWhere((element) => element.id == id);
+        state.animals.remove(animal);
+        state = state.copyWith(animals: [
+          ...state.animals,
+        ]);
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }

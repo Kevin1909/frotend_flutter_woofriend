@@ -4,9 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/auth/presentation/providers/providers.dart';
 
-
-import 'package:woofriend/features/auth/presentation/providers/forms/register_form_provider.dart';
-
 import 'package:woofriend/features/shared/shared.dart';
 
 class FoundationRegisterScreen extends StatelessWidget {
@@ -34,8 +31,8 @@ class FoundationRegisterScreen extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {
-
-                      context.pop();
+                      //if ( !context.canPop() ) return;
+                      //context.pop();
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
                         size: 40, color: Colors.white)),
@@ -55,10 +52,7 @@ class FoundationRegisterScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                   color: Color(0xFFF8F7F7),
                   borderRadius: BorderRadius.all(Radius.circular(50))),
-
               child: const _FoundationForm(),
-
-
             )
           ]),
         )),
@@ -67,15 +61,16 @@ class FoundationRegisterScreen extends StatelessWidget {
   }
 }
 
-
 class _FoundationForm extends ConsumerWidget {
   const _FoundationForm();
 
-class _RegisterForm extends ConsumerWidget {
-  const _RegisterForm();
+   void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
 
-
-  void openDialog(BuildContext context) {
+   void openDialog(BuildContext context) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -99,23 +94,15 @@ class _RegisterForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final foundationForm = ref.watch(registerFormProvider);
-
-    final petloverForm = ref.watch(registerFormProvider);
-
     ref.listen(registerFormProvider, (previous, next) {
       if (!next.userRegistered) return;
       openDialog(context);
     });
-
-class _FoundationForm extends ConsumerWidget {
-  const _FoundationForm();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final foundationForm = ref.watch(registerFormProvider);
-
+    ref.listen(authProvider, (previous, next) {
+      if (next.errorMessage.isEmpty) return;
+      showSnackbar(context, "Ya existe este correo");
+    });
 
     final textStyle = Theme.of(context).textTheme;
     const sizeIcons = Size.square(40);
@@ -134,13 +121,7 @@ class _FoundationForm extends ConsumerWidget {
           const SizedBox(
             height: 35,
           ),
-
-          Text("Registrar fundación", style: textStyle.titleMedium),
-
-          Text("Registrar petlover", style: textStyle.titleMedium),
-
           Text("Registrar entidad", style: textStyle.titleMedium),
-
           const SizedBox(
             height: 35,
           ),
@@ -152,21 +133,12 @@ class _FoundationForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-
-                label: "Nombre y apellido",
-                keyboardType: TextInputType.name,
-                onChanged:
-                    ref.read(registerFormProvider.notifier).onNameChanged,
-                errorMessage: petloverForm.isFormPosted
-                    ? petloverForm.name.errorMessage
-
                 label: "Nombre fundación",
                 keyboardType: TextInputType.name,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onNameChanged,
                 errorMessage: foundationForm.isFormPosted
                     ? foundationForm.name.errorMessage
-
                     : null,
               ),
             ),
@@ -186,16 +158,8 @@ class _FoundationForm extends ConsumerWidget {
                 keyboardType: TextInputType.emailAddress,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onEmailChange,
-
                 errorMessage: foundationForm.isFormPosted
                     ? foundationForm.email.errorMessage
-
-                errorMessage: petloverForm.isFormPosted
-                    ? petloverForm.email.errorMessage
-
-                errorMessage: foundationForm.isFormPosted
-                    ? foundationForm.email.errorMessage
-
                     : null,
               ),
             ),
@@ -211,20 +175,12 @@ class _FoundationForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Ciudad y departamento",
+                label: "Ubicación",
                 keyboardType: TextInputType.streetAddress,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onUbicationChanged,
-
                 errorMessage: foundationForm.isFormPosted
                     ? foundationForm.ubication.errorMessage
-
-                errorMessage: petloverForm.isFormPosted
-                    ? petloverForm.ubication.errorMessage
-
-                errorMessage: foundationForm.isFormPosted
-                    ? foundationForm.ubication.errorMessage
-
                     : null,
               ),
             ),
@@ -244,16 +200,8 @@ class _FoundationForm extends ConsumerWidget {
                 keyboardType: TextInputType.phone,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onPhoneChanged,
-
                 errorMessage: foundationForm.isFormPosted
                     ? foundationForm.phone.errorMessage
-
-                errorMessage: petloverForm.isFormPosted
-                    ? petloverForm.phone.errorMessage
-
-                errorMessage: foundationForm.isFormPosted
-                    ? foundationForm.phone.errorMessage
-
                     : null,
               ),
             ),
@@ -274,17 +222,8 @@ class _FoundationForm extends ConsumerWidget {
                 keyboardType: TextInputType.visiblePassword,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onPasswordChanged,
-
                 errorMessage: foundationForm.isFormPosted
                     ? foundationForm.password.errorMessage
-
-
-                errorMessage: petloverForm.isFormPosted
-                    ? petloverForm.password.errorMessage
-
-                errorMessage: foundationForm.isFormPosted
-                    ? foundationForm.password.errorMessage
-
                     : null,
               ),
             ),
@@ -315,21 +254,6 @@ class _FoundationForm extends ConsumerWidget {
             width: 150,
             height: 45,
             child: CustomFilledButton(
-
-                text: "Registrar",
-                buttonColor: colorTertiaryTheme,
-                colorText: colorSecondaryTheme,
-                onPressed: petloverForm.isPosting
-                    ? null
-                    : () {
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .onFormSubmitRegister("user_petlover");
-                        
-                      }),
-          ),
-          const Spacer(),
-
               text: "Registrar",
               buttonColor: colorTertiaryTheme,
               colorText: colorSecondaryTheme,
@@ -337,11 +261,10 @@ class _FoundationForm extends ConsumerWidget {
                   ? null
                   : () => ref
                       .read(registerFormProvider.notifier)
-                      .onFormSubmitRegister("user_foundation"),
+                      .onFormSubmitRegister("user_foundation", "new"),
             ),
-          );
-          const Spacer();
-
+          ),
+          const Spacer()
         ],
       ),
     );

@@ -49,8 +49,7 @@ class AuthDataSourceImpl extends AuthDataSource {
       return user;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        throw CustomError(
-            'Credenciales incorrectas, vuelve a intentar');
+        throw CustomError('Credenciales incorrectas, vuelve a intentar');
       }
       if (e.type == DioExceptionType.connectionTimeout) {
         throw CustomError('Revisar conexión a internet');
@@ -64,10 +63,20 @@ class AuthDataSourceImpl extends AuthDataSource {
   @override
   Future<User> registerUpdateUser(Map<String, dynamic> user) async {
     try {
+      final urlBackend = Environment.apiUrl;
       final String? userId = user['id'];
       final String method = (userId == null) ? 'POST' : 'PATCH';
       final String url = (userId == null) ? '/auth/register' : '/auth/$userId';
 
+      Map<String, dynamic> profile = {
+        "firstcontent": "",
+        "secondcontent": "",
+        "thirdcontent": "",
+        "photo": "",
+        "user": user
+      };
+      if(method == 'POST') await dio.post("$urlBackend/");
+      
       user.remove('id');
 
       final response =
@@ -82,6 +91,21 @@ class AuthDataSourceImpl extends AuthDataSource {
       if (e.type == DioExceptionType.connectionTimeout) {
         throw CustomError('Revisar conexión a internet');
       }
+      throw Exception();
+    }
+  }
+
+  @override
+  Future<User> getUserById(String id) async {
+    try {
+      final response = await dio.get('/profile/$id');
+      final user = UserMapper.userJsonToEntity(response.data);
+      return user;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 404)
+        throw CustomError("No se pudo encontrar");
+      throw Exception();
+    } catch (e) {
       throw Exception();
     }
   }

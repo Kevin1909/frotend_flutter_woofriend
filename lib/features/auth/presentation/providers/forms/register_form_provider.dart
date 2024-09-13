@@ -7,7 +7,8 @@ import '../auth_provider.dart';
 final registerFormProvider =
     StateNotifierProvider.autoDispose<RegisterFormNotifier, RegisterFormState>(
         (ref) {
-  final registerUserCallback = ref.watch(authProvider.notifier).registerUser;
+  final registerUserCallback =
+      ref.watch(authProvider.notifier).registerOrUpdateUser;
 
   return RegisterFormNotifier(registerUserCallback: registerUserCallback);
 });
@@ -85,7 +86,23 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         ]));
   }
 
-  onFormSubmitRegister(String rol) async {
+  void updateUserImage(String photo) {
+    state = state.copyWith(photo: photo);
+  }
+
+  void updateFirstContent(String firstContent) {
+    state = state.copyWith(firstContent: firstContent);
+  }
+
+  void updateSecondContent(String secondContent) {
+    state = state.copyWith(secondContent: secondContent);
+  }
+
+  void updateThirdContent(String thirdContent) {
+    state = state.copyWith(thirdContent: thirdContent);
+  }
+
+  onFormSubmitRegister(String? rol, String id) async {
     List<String> roles = [];
 
     _touchEveryField();
@@ -96,25 +113,35 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
       isPosting: true,
     );
 
-    roles.add(rol);
+    roles.add(rol!);
 
     Map<String, dynamic> userData = {
-      "id": null,
+      "id": (id == "new") ? null : id,
       "email": state.email.value,
       "password": state.password.value,
       "name": state.name.value,
       "ubication": state.ubication.value,
       "phone": state.phone.value,
-      "roles": roles
+      "roles": roles,
+      "profile": {
+        "firstcontent" : state.firstContent,
+        "secondcontent": state.secondContent,
+        "thirdcontent": state.thirdContent,
+        "photo": state.phone
+      }
     };
 
     final registeredUser = await registerUserCallback(userData);
-    if (registeredUser) state = state.copyWith(userRegistered: true,);
-    
+    if (registeredUser)
+      state = state.copyWith(
+        userRegistered: true,
+      );
+
     roles.remove(rol);
-    state = state.copyWith(userRegistered: false,);
+    state = state.copyWith(
+      userRegistered: false,
+    );
     state = state.copyWith(isPosting: false);
-    
   }
 
   _touchEveryField() {
@@ -146,6 +173,10 @@ class RegisterFormState {
   final Name name;
   final Phone phone;
   final Ubication ubication;
+  final String firstContent;
+  final String secondContent;
+  final String thirdContent;
+  final String photo;
 
   RegisterFormState({
     this.isPosting = false,
@@ -157,6 +188,10 @@ class RegisterFormState {
     this.name = const Name.pure(),
     this.phone = const Phone.pure(),
     this.ubication = const Ubication.pure(),
+    this.firstContent = "",
+    this.secondContent = "",
+    this.thirdContent = "",
+    this.photo = ""
   });
 
   RegisterFormState copyWith({
@@ -169,6 +204,10 @@ class RegisterFormState {
     Name? name,
     Phone? phone,
     Ubication? ubication,
+    String? firstContent,
+    String? secondContent,
+    String? thirdContent,
+    String? photo
   }) =>
       RegisterFormState(
         isPosting: isPosting ?? this.isPosting,
@@ -180,5 +219,9 @@ class RegisterFormState {
         name: name ?? this.name,
         phone: phone ?? this.phone,
         ubication: ubication ?? this.ubication,
+        firstContent: firstContent ?? this.firstContent,
+        secondContent: secondContent ?? this.secondContent,
+        thirdContent: thirdContent ?? this.thirdContent,
+        photo: photo ?? this.photo
       );
 }

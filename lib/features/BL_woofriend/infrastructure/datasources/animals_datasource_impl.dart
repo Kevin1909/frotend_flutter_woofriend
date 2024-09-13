@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:woofriend/config/config.dart';
 
@@ -20,7 +17,7 @@ class AnimalsDatasourceImpl extends AnimalsDatasource {
 
   Future<String> _uploadFile(String path) async {
     try {
-      if (!path.startsWith("http")) {
+      if (!path.startsWith("http") && path != "") {
         final fileName = path.split('/').last;
         final FormData data = FormData.fromMap({
           'file': MultipartFile.fromFileSync(
@@ -95,5 +92,19 @@ class AnimalsDatasourceImpl extends AnimalsDatasource {
   Future<List<Animal>> searchAnimalByTerm(String term) {
     // TODO: implement searchProductByTerm
     throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> deleteAnimal(String id) async {
+    try {
+      await dio.delete('/animals/$id');
+      return true;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 404)
+        throw CustomError("No se pudo encontrar");
+      throw Exception();
+    } catch (e) {
+      throw Exception();
+    }
   }
 }

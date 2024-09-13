@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/BL_woofriend/domain/domain.dart';
 import 'package:woofriend/features/auth/presentation/providers/providers.dart';
 import 'package:woofriend/features/shared/shared.dart';
@@ -11,8 +12,10 @@ import '../../../auth/domain/domain.dart';
 class PetsScreen extends ConsumerStatefulWidget {
   final List<Animal> animals;
   final VoidCallback? loadNextPage;
+  final Function(String id)? deleteAnimal;
 
-  const PetsScreen({super.key, this.loadNextPage, required this.animals});
+  const PetsScreen(
+      {super.key, this.deleteAnimal, this.loadNextPage, required this.animals});
 
   @override
   PetsScreenState createState() => PetsScreenState();
@@ -47,7 +50,7 @@ class PetsScreenState extends ConsumerState<PetsScreen> {
     final user = ref.watch(authProvider).user;
 
     return SizedBox(
-      height: (size.height * 0.9) -120,
+      height: (size.height * 0.9) - 120,
       child: Column(
         children: [
           Expanded(
@@ -58,7 +61,10 @@ class PetsScreenState extends ConsumerState<PetsScreen> {
               itemBuilder: (context, index) {
                 return FadeInRight(
                     child: _SlideAnimals(
-                        animal: widget.animals[index], user: user));
+                  animal: widget.animals[index],
+                  user: user,
+                  deleteAnimal: widget.deleteAnimal,
+                ));
               },
             ),
           )
@@ -71,8 +77,41 @@ class PetsScreenState extends ConsumerState<PetsScreen> {
 class _SlideAnimals extends StatelessWidget {
   final Animal animal;
   final User? user;
+  final Function(String id)? deleteAnimal;
 
-  const _SlideAnimals({required this.animal, this.user});
+  const _SlideAnimals({required this.animal, this.user, this.deleteAnimal});
+
+  void showCustomDialog(BuildContext context) {
+    const colorDialog = colorTertiaryTheme;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colorDialog,
+        actionsAlignment: MainAxisAlignment.spaceAround,
+        title: const Text('¿Desea eliminar la mascota?'),
+        titleTextStyle: const TextStyle(
+          fontStyle: FontStyle.normal,
+          color: Colors.white,
+        ),
+        actions: [
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.white70)),
+              onPressed: () {
+                deleteAnimal!(animal.id);
+                context.pop();
+              },
+              child: const Text('¡Sí!')),
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.white70)),
+              onPressed: () => context.pop(),
+              child: const Text('¡No!')),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +120,6 @@ class _SlideAnimals extends StatelessWidget {
       if (animal.user!.id == user!.id) return true;
       return false;
     }
-
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -100,15 +138,21 @@ class _SlideAnimals extends StatelessWidget {
                 child: SizedBox(
                   width: size.width * 0.3,
                   height: 200,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: FadeInImage(
-                fit: BoxFit.fill,
-                width: double.infinity,
-                height: 300,
-                placeholder: const AssetImage('assets/loaders/wait_dog.gif'), 
-                image: NetworkImage(animal.photo),
-              )),
+                  child: (animal.photo != "")
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: FadeInImage(
+                            fit: BoxFit.fill,
+                            width: double.infinity,
+                            height: 300,
+                            placeholder:
+                                const AssetImage('assets/loaders/wait_dog.gif'),
+                            image: NetworkImage(animal.photo),
+                          ))
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset('assets/images/no-image.jpg',
+                              fit: BoxFit.cover)),
                 ),
               ),
               const SizedBox(
@@ -146,33 +190,27 @@ class _SlideAnimals extends StatelessWidget {
                         ),
                       )
                     ]),
-                    const SizedBox(height: 10,),
-
-                    if(isMatchedUser()) Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [ 
-                          
-                          const SizedBox(
-                            width: 120
-                          ),
-                          IconButton(
-                          iconSize: 25,
-                          icon: const Icon(Icons.update_rounded),
-                          onPressed: () {
-                            context.push('/animalUpdate/${animal.id}');
-                          },
-                        ),
-                        IconButton(
-                          iconSize: 25,
-                          icon: const Icon(Icons.delete_forever_rounded),
-                          onPressed: () {
-                            //context.push('/animalUpdate/${animal.id}');
-                          },
-                        ),
-                        
-                        ]
-                      ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (isMatchedUser())
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(width: 120),
+                            IconButton(
+                              iconSize: 25,
+                              icon: const Icon(Icons.update_rounded),
+                              onPressed: () {
+                                context.push('/animalUpdate/${animal.id}');
+                              },
+                            ),
+                            IconButton(
+                                iconSize: 25,
+                                icon: const Icon(Icons.delete_forever_rounded),
+                                onPressed: () => showCustomDialog(context)),
+                          ]),
                     const SizedBox()
                   ])
             ]),

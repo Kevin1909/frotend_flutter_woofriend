@@ -42,7 +42,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // state =state.copyWith(user: user, authStatus: AuthStatus.authenticated)
   }
 
-  Future<bool> registerUser(Map<String, dynamic> user) async {
+  Future<bool> registerOrUpdateUser(Map<String, dynamic> user) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
@@ -57,6 +57,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+
+
   void checkAuthStatus() async {
     final token = await keyValueStorageService.getValue<String>('token');
     if (token == null) return logout();
@@ -69,9 +71,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+
+
   void _setLoggedUser(User user) async {
     await keyValueStorageService.setKeyValue('token', user.token);
-    if (user.roles.contains("user_foundation")) state = state.copyWith(isFoundation: true);
+    if (user.roles.contains("user_foundation"))
+      state = state.copyWith(isFoundation: true);
 
     state = state.copyWith(
       user: user,

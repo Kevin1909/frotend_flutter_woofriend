@@ -12,6 +12,8 @@ abstract class AnimalsRepository {
   
   Future<Animal> createUpdateAnimal( Map<String,dynamic> animalLike );
 
+  Future<bool> deleteAnimal(String id);
+
 
 }
 

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/BL_woofriend/domain/domain.dart';
 
 //import '../../../config/helpers/human_formats.dart';
 
-import '../../../shared/widgets/custom_update_field.dart';
-import '../providers/animals_providers/providers.dart';
+import '../../../../shared/widgets/custom_update_field.dart';
+import '../../providers/animals_providers/providers.dart';
 
 class AnimalScreen extends ConsumerWidget {
   final String animalId;
@@ -67,11 +68,11 @@ class _AnimalDetails extends StatelessWidget {
           animal: animal,
           size: size,
         ),
-         const SizedBox(
+        const SizedBox(
           height: 16,
         ),
         const _TextIcon(),
-         const SizedBox(
+        const SizedBox(
           height: 16,
         ),
       ],
@@ -196,15 +197,12 @@ class _InfoAditionalAnimal extends StatelessWidget {
           children: [
             CustomUpdateField(
               readOnly: true,
-              isBottomField: true,
               isTopField: true,
               keyboardType: TextInputType.name,
               label: 'Registro de vacunas',
               initialValue: animal!.vaccinationrecord,
             ),
             CustomUpdateField(
-              isTopField: true,
-              isBottomField: true,
               readOnly: true,
               label: 'Patologías o incapacidades',
               keyboardType: TextInputType.text,
@@ -212,7 +210,6 @@ class _InfoAditionalAnimal extends StatelessWidget {
             ),
             CustomUpdateField(
               readOnly: true,
-              isTopField: true,
               isBottomField: true,
               keyboardType: TextInputType.datetime,
               label: 'Número de contacto',
@@ -230,10 +227,16 @@ class _TextIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
+    final textStyle = Theme.of(context).textTheme;
+    const colorBotton = colorPrimaryTheme;
+    return FilledButton.icon(
+      style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(colorBotton)),
       onPressed: () {},
-      icon: const Icon(Icons.check_circle_outline_outlined),
-      label: const Text('Adoptar'),
+      icon: const Icon(Icons.check_circle_outline_rounded),
+      label: Text(
+        'Adoptar',
+        style: textStyle.bodyMedium,
+      ),
     );
   }
 }
