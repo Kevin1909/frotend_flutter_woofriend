@@ -20,7 +20,15 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     TabController tabController = TabController(length: 4, vsync: this);
     final userProvider = ref.watch(authProvider);
-    final userId = userProvider.user!.id;
+
+
+    ImageProvider isNetworkOrFile() {
+    if (userProvider.user!.photoUser.startsWith("http") && userProvider.user!.photoUser != "") {
+      return NetworkImage(userProvider.user!.photoUser);
+    }else {
+      return const AssetImage('assets/images/no_photo_profile.png');
+    }
+  }
 
     const backgroundColorAppBar = colorPrimaryTheme;
     const colorButtonBar = Color.fromARGB(255, 51, 53, 55);
@@ -28,7 +36,6 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
     const sizeIconBar = Size.square(24.0);
 
     const searchIcon = "icons/magnify_search_zoom_icon.svg";
-    const circleUser = "icons/circle_user_icon.svg";
 
     @override
     void initState() {
@@ -60,11 +67,10 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
               // const Icon( Icons.favorite_border )
               // icon: const Icon( Icons.favorite_rounded, color: Colors.red )
               ),
-          CustomButton(
-            ontap: () => context.push('/userProfile/$userId'),
-            assetIcon: circleUser,
-            sizeIcon: sizeIconBar,
-            color: colorButtonBar,
+          InkWell(
+            onTap: () => context.push("/userProfile") ,
+            child: CircleAvatar(
+                    radius: 14.0, backgroundImage: isNetworkOrFile()),
           ),
           const CustomButton(
               assetIcon: searchIcon,
@@ -78,7 +84,7 @@ class HomeScreenState extends ConsumerState with TickerProviderStateMixin {
         bottom: TabBar(
           controller: tabController,
           labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: Colors.black12,
           indicatorColor: const Color.fromRGBO(26, 59, 90, 1),
           tabs: const <Widget>[
             Tab(
