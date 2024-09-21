@@ -30,18 +30,16 @@ class LoginScreen extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 10
-                      
-                    )
+                    BoxShadow(color: Colors.black, blurRadius: 10)
                   ]),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset('assets/images/dog_cute.png',
-                        fit: BoxFit.cover, height:125,)),
-              ),
-            
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/dog_cute.png',
+                    fit: BoxFit.cover,
+                    height: 125,
+                  )),
+            ),
             const SizedBox(
               height: 60,
             ),
@@ -64,10 +62,10 @@ class LoginScreen extends StatelessWidget {
 class _LoginForm extends ConsumerWidget {
   const _LoginForm();
 
-  void showSnackbar(BuildContext context, String message) {
+  void showSnackbarLogin(BuildContext context, String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(duration: const Duration(seconds: 3), content: Text(message)));
   }
 
   void openDialog(BuildContext context) {
@@ -101,13 +99,20 @@ class _LoginForm extends ConsumerWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loginForm = ref.watch(loginFormProvider);
-    ref.listen(authProvider, (previous, next) {
-      if (next.errorMessage.isEmpty) return;
-      showSnackbar(context, next.errorMessage);
-    });
+    final registerForm = ref.watch(registerFormProvider);
+    final authUser = ref.watch(authProvider);
+    if (!registerForm.userRegistered) {
+      ref.listen(authProvider, (previous, next) {
+        if (next.errorMessage.isEmpty) return;
+        showSnackbarLogin(context, next.errorMessage);
+        authUser.copyWith(errorMessage: "");
+      });
+    }
+
 
     final textStyle = Theme.of(context).textTheme;
 
