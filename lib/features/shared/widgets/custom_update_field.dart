@@ -13,7 +13,9 @@ class CustomUpdateField extends StatelessWidget {
   final String initialValue;
   final Function(String)? onChanged;
   final Function(String)? onFieldSubmitted;
+  final Function(String?)? onSaved;
   final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   const CustomUpdateField({
     super.key,
@@ -29,7 +31,9 @@ class CustomUpdateField extends StatelessWidget {
     this.initialValue = '',
     this.onChanged,
     this.onFieldSubmitted,
+    this.onSaved,
     this.validator,
+    this.controller,
   });
 
   @override
@@ -61,8 +65,10 @@ class CustomUpdateField extends StatelessWidget {
           ]),
       child: TextFormField(
         readOnly: readOnly,
+        controller: controller ,
         onChanged: onChanged,
         onFieldSubmitted: onFieldSubmitted,
+        onSaved: onSaved,
         validator: validator,
         obscureText: obscureText,
         keyboardType: keyboardType,

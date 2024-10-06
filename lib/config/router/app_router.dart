@@ -3,6 +3,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/screens/screens_animal/animal_update_screen.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/screens/home_screen.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/screens/screens_bl.dart';
+import 'package:woofriend/features/BL_woofriend/presentation/screens/screens_user_profile/user_update_screen.dart';
 import 'package:woofriend/features/auth/presentation/screen/screens.dart';
 
 import '../../features/BL_woofriend/presentation/screens/screens_animal/animal_screen.dart';
@@ -56,10 +57,13 @@ final goRouterProvider = Provider((ref) {
         ),
       ),
       GoRoute(
-        path: '/userProfile/:id', // /product/new
-        builder: (context, state) => UserProfileScreen(
-          userId: state.pathParameters['id'] ?? 'no-id',
-        ),
+        path: '/userProfile', // /product/new
+        builder: (context, state) => const UserProfileScreen(),
+      ),
+
+      GoRoute(
+        path: '/userUpdateScreen', // /product/new
+        builder: (context, state) => const UserUpdateScreen(),
       ),
 
       

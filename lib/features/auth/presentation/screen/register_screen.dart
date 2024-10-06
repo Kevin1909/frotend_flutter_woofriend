@@ -9,11 +9,11 @@ import 'package:woofriend/features/shared/shared.dart';
 
 import '../providers/auth_provider.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends ConsumerWidget {
   const RegisterScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
@@ -69,11 +69,10 @@ class _RegisterForm extends ConsumerWidget {
 
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(duration: const Duration(seconds: 3), content: Text(message)));
   }
-
-  void openDialog(BuildContext context) {
+  void openDialogRegistered(BuildContext context) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -87,9 +86,9 @@ class _RegisterForm extends ConsumerWidget {
               style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(Colors.black12)),
               onPressed: () {
-                context.push('/login');
+                context.push("/login");
               },
-              child: const Text('Ingresar')),
+              child: const Text('¡Ingresar!')),
         ],
       ),
     );
@@ -98,14 +97,20 @@ class _RegisterForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final petloverForm = ref.watch(registerFormProvider);
+    final authUser = ref.watch(authProvider);
+    
     ref.listen(registerFormProvider, (previous, next) {
       if (!next.userRegistered) return;
-      openDialog(context);
+      openDialogRegistered(context);
     });
-    ref.listen(authProvider, (previous, next) {
-      if (next.errorMessage.isEmpty) return;
-      showSnackbar(context, "Ya existe este correo");
-    });
+
+    if (!petloverForm.userRegistered) {
+      ref.listen(authProvider, (previous, next) {
+        if (next.errorMessage.isEmpty) return;
+        showSnackbar(context, next.errorMessage);
+        authUser.copyWith(errorMessage: "");
+      });
+    }
 
     final textStyle = Theme.of(context).textTheme;
     const sizeIcons = Size.square(40);
@@ -178,7 +183,7 @@ class _RegisterForm extends ConsumerWidget {
             SizedBox(
               width: 240,
               child: CustomTextFormField(
-                label: "Ubicación",
+                label: "Ciudad y departamento",
                 keyboardType: TextInputType.streetAddress,
                 onChanged:
                     ref.read(registerFormProvider.notifier).onUbicationChanged,
@@ -263,10 +268,14 @@ class _RegisterForm extends ConsumerWidget {
                 onPressed: petloverForm.isPosting
                     ? null
                     : () {
+                       
                         ref
                             .read(registerFormProvider.notifier)
-                            .onFormSubmitRegister("user_petlover", "new");
-                        
+                            .onFormSubmitRegister(
+                              "new",
+                              "user_petlover",
+                            );
+                      
                       }),
           ),
           const Spacer(),

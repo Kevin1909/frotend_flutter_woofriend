@@ -114,8 +114,15 @@ class _SlideAnimals extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    ImageProvider isNetworkOrFile() {
+    if (animal.user!.photoUser.startsWith("http") && animal.user!.photoUser != "") {
+      return NetworkImage(animal.user!.photoUser);
+    }else {
+      return const AssetImage('assets/images/no_photo_profile.png');
+    }
+  }
     bool isMatchedUser() {
       if (animal.user!.id == user!.id) return true;
       return false;
@@ -173,9 +180,12 @@ class _SlideAnimals extends StatelessWidget {
                       height: 30,
                     ),
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const CircleAvatar(
-                        child: Icon(Icons.person_2_rounded),
-                      ),
+                      /*InkWell(
+            onTap: () => context.push("/userProfile") ,
+          ),*/
+                      CircleAvatar(
+                          radius: 14.0,
+                          backgroundImage: isNetworkOrFile(),),
                       const SizedBox(
                         width: 15,
                       ),
@@ -201,7 +211,7 @@ class _SlideAnimals extends StatelessWidget {
                             const SizedBox(width: 120),
                             IconButton(
                               iconSize: 25,
-                              icon: const Icon(Icons.update_rounded),
+                              icon: const Icon(Icons.create),
                               onPressed: () {
                                 context.push('/animalUpdate/${animal.id}');
                               },

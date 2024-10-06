@@ -6,10 +6,12 @@ class User {
   final String name;
   final String phone;
   final String ubication;
-  final String password;
   final List<String> roles;
   final String token;
-  final UserProfile profile;
+  final String firstcontent;
+  final String secondcontent;
+  final String thirdcontent;
+  final String photoUser;
 
   User( {
     required this.id,
@@ -17,10 +19,13 @@ class User {
     required this.name,
     required this.phone,
     required this.ubication,
-    required this.password,
     required this.roles,
     required this.token,
-    required this.profile,
+    required this.firstcontent,
+    required this.secondcontent,
+    required this.thirdcontent,
+    required this.photoUser,
+   
   });
 
   bool get isAdmin {

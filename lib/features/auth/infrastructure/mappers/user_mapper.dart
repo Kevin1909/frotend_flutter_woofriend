@@ -1,4 +1,4 @@
-import 'package:woofriend/features/auth/infrastructure/mappers/user_profile_mapper.dart';
+
 
 import '../../domain/domain.dart';
 
@@ -9,8 +9,11 @@ class UserMapper {
       name: json['name'],
       phone: json['phone'],
       ubication: json['ubication'],
-      password: json['password'],
       roles: List<String>.from(json['roles'].map((role) => role)),
       token: json['token'] ?? '',
-      profile: UserProfileMapper.userProfileJsonToEntity(json['profile']));
+      firstcontent: json['firstcontent'] ?? "",
+      secondcontent: json['secondcontent'] ?? "",
+      thirdcontent: json['thirdcontent'] ?? "",
+      photoUser: json['photo'] ?? "",
+      );
 }

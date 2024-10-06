@@ -1,15 +1,11 @@
-
 import 'package:woofriend/features/auth/domain/domain.dart';
 import '../infrastructure.dart';
 
-
 class AuthRepositoryImpl extends AuthRepository {
-
   final AuthDataSource dataSource;
 
-  AuthRepositoryImpl({
-    AuthDataSource? dataSource
-  }) : dataSource = dataSource ?? AuthDataSourceImpl();
+  AuthRepositoryImpl({AuthDataSource? dataSource})
+      : dataSource = dataSource ?? AuthDataSourceImpl();
 
   @override
   Future<User> checkAuthStatus(String token) {
@@ -22,13 +18,18 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<User> registerUpdateUser(Map<String,dynamic> user) {
-    return dataSource.registerUpdateUser(user);
-  }
-  
-  @override
-  Future<User> getUserById(String id) {
-    return dataSource.getUserById(id);
+  Future<User> registerUpdateUser(
+    Map<String, dynamic> user,
+  ) {
+    return dataSource.registerUpdateUser(
+      user,
+    );
   }
 
+  @override
+  Future<bool> deleteUser(String id) {
+    return dataSource.deleteUser(
+      id,
+    );
+  }
 }

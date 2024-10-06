@@ -1,7 +1,10 @@
 import 'package:formz/formz.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:woofriend/features/auth/domain/entities/user.dart';
 import 'package:woofriend/features/auth/presentation/infrastructure/inputs/inputs.dart';
+import 'package:woofriend/features/shared/infrastructure/services/key_value_storage_service_impl.dart';
 
+import '../../../../shared/infrastructure/services/key_value_storage_service.dart';
 import '../auth_provider.dart';
 
 final registerFormProvider =
@@ -9,17 +12,52 @@ final registerFormProvider =
         (ref) {
   final registerUserCallback =
       ref.watch(authProvider.notifier).registerOrUpdateUser;
+  final keyValueStorageService = KeyValueStorageServiceImpl();
 
-  return RegisterFormNotifier(registerUserCallback: registerUserCallback);
+  return RegisterFormNotifier(
+      registerUserCallback: registerUserCallback,
+      keyValueStorageService: keyValueStorageService);
 });
 
 //! 2 - Como implementamos un notifier
 class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
-  final Future<bool> Function(Map<String, dynamic>) registerUserCallback;
+  final Future<bool> Function(
+    Map<String, dynamic>, [String? id]
+  ) registerUserCallback;
+
+  final KeyValueStorageService keyValueStorageService;
 
   RegisterFormNotifier({
     required this.registerUserCallback,
+    required this.keyValueStorageService,
   }) : super(RegisterFormState());
+
+  onUpdateUser(User user, String passwordTemp) {
+    state = state.copyWith(
+        email: (state.email.value == "")
+            ? Email.dirty(user.email)
+            : Email.dirty(state.email.value),
+        password: (state.password.value == "")
+            ? Password.dirty(passwordTemp)
+            : Password.dirty(state.password.value),
+        ubication: (state.ubication.value == "")
+            ? Ubication.dirty(user.ubication)
+            : Ubication.dirty(state.ubication.value),
+        phone: (state.phone.value == "")
+            ? Phone.dirty(user.phone)
+            : Phone.dirty(state.phone.value),
+        name: (state.name.value == "")
+            ? Name.dirty(user.name)
+            : Name.dirty(state.name.value),
+        firstcontent:
+            (state.firstcontent == "") ? user.firstcontent : state.firstcontent,
+        secondcontent: (state.secondcontent == "")
+            ? user.secondcontent
+            : state.secondcontent,
+        thirdcontent:
+            (state.thirdcontent == "") ? user.thirdcontent : state.thirdcontent,
+        photo: (state.photo.isEmpty) ? user.photoUser : state.photo);
+  }
 
   onEmailChange(String value) {
     final newEmail = Email.dirty(value);
@@ -32,6 +70,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
           state.phone,
           state.ubication
         ]));
+    const Email.pure();
   }
 
   onPasswordChanged(String value) {
@@ -86,62 +125,71 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         ]));
   }
 
-  void updateUserImage(String photo) {
+  updateUserImage(String photo) {
     state = state.copyWith(photo: photo);
   }
 
   void updateFirstContent(String firstContent) {
-    state = state.copyWith(firstContent: firstContent);
+    state = state.copyWith(firstcontent: firstContent);
   }
 
   void updateSecondContent(String secondContent) {
-    state = state.copyWith(secondContent: secondContent);
+    state = state.copyWith(secondcontent: secondContent);
   }
 
   void updateThirdContent(String thirdContent) {
-    state = state.copyWith(thirdContent: thirdContent);
+    state = state.copyWith(thirdcontent: thirdContent);
   }
 
-  onFormSubmitRegister(String? rol, String id) async {
+  Future<bool> onFormSubmitRegister(
+    String id, [
+    String? rol,
+  ]) async {
     List<String> roles = [];
 
     _touchEveryField();
 
-    if (!state.isValid) return;
+    if (!state.isValid) return false;
+
+    await Future.delayed(const Duration(milliseconds: 300));
 
     state = state.copyWith(
       isPosting: true,
     );
-
     roles.add(rol!);
 
     Map<String, dynamic> userData = {
-      "id": (id == "new") ? null : id,
-      "email": state.email.value,
-      "password": state.password.value,
-      "name": state.name.value,
-      "ubication": state.ubication.value,
-      "phone": state.phone.value,
-      "roles": roles,
-      "profile": {
-        "firstcontent" : state.firstContent,
-        "secondcontent": state.secondContent,
-        "thirdcontent": state.thirdContent,
-        "photo": state.phone
-      }
+      'id': (id == 'new') ? null : id,
+      'email': state.email.value,
+      'password': state.password.value,
+      'name': state.name.value,
+      'ubication': state.ubication.value,
+      'phone': state.phone.value,
+      'roles': roles,
+      'firstcontent': state.firstcontent,
+      'secondcontent': state.secondcontent,
+      'thirdcontent': state.thirdcontent,
+      'photo': state.photo
     };
-
-    final registeredUser = await registerUserCallback(userData);
-    if (registeredUser)
-      state = state.copyWith(
-        userRegistered: true,
+    try {
+      await Future.delayed(const Duration(milliseconds: 300));
+      final registeredUser = await registerUserCallback(
+        userData,
+        id
       );
+      if (registeredUser)
+        state = state.copyWith(
+          userRegistered: true,
+        );
 
-    roles.remove(rol);
-    state = state.copyWith(
-      userRegistered: false,
-    );
-    state = state.copyWith(isPosting: false);
+      roles.remove(rol);
+
+      state = state.copyWith(
+          isPosting: false, isValid: false, userRegistered: false);
+      return registeredUser;
+    } catch (e) {
+      return false;
+    }
   }
 
   _touchEveryField() {
@@ -173,9 +221,9 @@ class RegisterFormState {
   final Name name;
   final Phone phone;
   final Ubication ubication;
-  final String firstContent;
-  final String secondContent;
-  final String thirdContent;
+  final String firstcontent;
+  final String secondcontent;
+  final String thirdcontent;
   final String photo;
 
   RegisterFormState({
@@ -188,10 +236,10 @@ class RegisterFormState {
     this.name = const Name.pure(),
     this.phone = const Phone.pure(),
     this.ubication = const Ubication.pure(),
-    this.firstContent = "",
-    this.secondContent = "",
-    this.thirdContent = "",
-    this.photo = ""
+    this.firstcontent = "",
+    this.secondcontent = "",
+    this.thirdcontent = "",
+    this.photo = "",
   });
 
   RegisterFormState copyWith({
@@ -204,10 +252,10 @@ class RegisterFormState {
     Name? name,
     Phone? phone,
     Ubication? ubication,
-    String? firstContent,
-    String? secondContent,
-    String? thirdContent,
-    String? photo
+    String? firstcontent,
+    String? secondcontent,
+    String? thirdcontent,
+    String? photo,
   }) =>
       RegisterFormState(
         isPosting: isPosting ?? this.isPosting,
@@ -219,9 +267,9 @@ class RegisterFormState {
         name: name ?? this.name,
         phone: phone ?? this.phone,
         ubication: ubication ?? this.ubication,
-        firstContent: firstContent ?? this.firstContent,
-        secondContent: secondContent ?? this.secondContent,
-        thirdContent: thirdContent ?? this.thirdContent,
-        photo: photo ?? this.photo
+        firstcontent: firstcontent ?? this.firstcontent,
+        secondcontent: secondcontent ?? this.secondcontent,
+        thirdcontent: thirdcontent ?? this.thirdcontent,
+        photo: photo ?? this.photo,
       );
 }

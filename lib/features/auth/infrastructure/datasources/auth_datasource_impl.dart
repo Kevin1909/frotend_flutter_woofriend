@@ -13,6 +13,26 @@ class AuthDataSourceImpl extends AuthDataSource {
     baseUrl: Environment.apiUrl,
   ));
 
+  Future<String> _uploadFileProfile(String path) async {
+    try {
+      if (!path.startsWith("http") && path != "") {
+        final fileName = path.split('/').last;
+        final FormData data = FormData.fromMap({
+          'file': MultipartFile.fromFileSync(
+            path,
+            filename: fileName,
+          )
+        });
+        final response = await dio.post('/files/profile', data: data);
+
+        return response.data["secureUrl"];
+      }
+      return path;
+    } catch (e) {
+      throw Exception();
+    }
+  }
+
   @override
   Future<User> checkAuthStatus(String token) async {
     try {
@@ -35,12 +55,12 @@ class AuthDataSourceImpl extends AuthDataSource {
   @override
   Future<User> login(String email, String password) async {
     try {
-      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+      /*(dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
           (HttpClient client) {
         client.badCertificateCallback =
             (X509Certificate cert, String host, int port) => true;
         return client;
-      };
+      };*/
 
       final response = await dio
           .post('/auth/login', data: {'email': email, 'password': password});
@@ -61,26 +81,17 @@ class AuthDataSourceImpl extends AuthDataSource {
   }
 
   @override
-  Future<User> registerUpdateUser(Map<String, dynamic> user) async {
+  Future<User> registerUpdateUser(Map<String, dynamic> user,) async {
     try {
-      final urlBackend = Environment.apiUrl;
       final String? userId = user['id'];
       final String method = (userId == null) ? 'POST' : 'PATCH';
       final String url = (userId == null) ? '/auth/register' : '/auth/$userId';
 
-      Map<String, dynamic> profile = {
-        "firstcontent": "",
-        "secondcontent": "",
-        "thirdcontent": "",
-        "photo": "",
-        "user": user
-      };
-      if(method == 'POST') await dio.post("$urlBackend/");
-      
       user.remove('id');
+      user['photo'] = await _uploadFileProfile(user['photo']);
 
-      final response =
-          await dio.request(url, data: user, options: Options(method: method));
+      final response = await dio.request(url,
+          data: user, options: Options(method: method));
 
       final userLike = UserMapper.userJsonToEntity(response.data);
       return userLike;
@@ -94,13 +105,12 @@ class AuthDataSourceImpl extends AuthDataSource {
       throw Exception();
     }
   }
-
+  
   @override
-  Future<User> getUserById(String id) async {
+  Future<bool> deleteUser(String id) async{
     try {
-      final response = await dio.get('/profile/$id');
-      final user = UserMapper.userJsonToEntity(response.data);
-      return user;
+      await dio.delete('/auth/$id');
+      return true;
     } on DioException catch (e) {
       if (e.response!.statusCode == 404)
         throw CustomError("No se pudo encontrar");
@@ -109,4 +119,6 @@ class AuthDataSourceImpl extends AuthDataSource {
       throw Exception();
     }
   }
+
+ 
 }
