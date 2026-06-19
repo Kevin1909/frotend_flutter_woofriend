@@ -1,6 +1,6 @@
-# WoofFriend — App móvil (Flutter)
+# WooFriend — App móvil (Flutter)
 
-Aplicación móvil de **WoofFriend**, una plataforma de adopción de mascotas. Permite a los usuarios registrarse, explorar animales en adopción, enviar formularios de adopción, realizar publicaciones y subir imágenes desde el dispositivo.
+Aplicación móvil de **WooFriend**, una plataforma de adopción de mascotas. Permite a los usuarios registrarse, explorar animales en adopción, enviar formularios de adopción, realizar publicaciones y subir imágenes desde el dispositivo.
 
 Proyecto desarrollado como trabajo de grado del Tecnólogo en Desarrollo de Software (SENA). Consume la API REST del backend de WoofFriend (NestJS + PostgreSQL).
 
